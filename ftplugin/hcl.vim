@@ -35,11 +35,5 @@ if get(g:, 'hcl_align', 0) && exists(':Tabularize')
   let b:undo_ftplugin .= '|iunmap <buffer> ='
 endif
 
-command! -nargs=+ -complete=custom,terraform#commands -buffer Terraform
-  \ execute '!'.g:terraform_binary_path.' '.<q-args>.' -no-color'
-
-command! -nargs=0 -buffer TerraformFmt call terraform#fmt()
-let b:undo_ftplugin .= '|delcommand Terraform|delcommand TerraformFmt'
-
 let &cpoptions = s:cpo_save
 unlet s:cpo_save

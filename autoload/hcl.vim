@@ -1,36 +1,6 @@
 let s:cpo_save = &cpoptions
 set cpoptions&vim
 
-" Ensure no conflict with arguments from the environment
-let $TF_CLI_ARGS_fmt=''
-
-function! terraform#fmt() abort
-  " Save the view.
-  let curw = winsaveview()
-
-  " Make a fake change so that the undo point is right.
-  normal! ix
-  normal! "_x
-
-  " Execute `terraform fmt`, redirecting stderr to a temporary file.
-  let tmpfile = tempname()
-  let shellredir_save = &shellredir
-  let &shellredir = '>%s 2>'.tmpfile
-  silent execute '%!'.g:terraform_binary_path.' fmt -no-color -'
-  let &shellredir = shellredir_save
-
-  " If there was an error, undo any changes and show stderr.
-  if v:shell_error != 0
-    silent undo
-    let output = readfile(tmpfile)
-    echo join(output, "\n")
-  endif
-
-  " Delete the temporary file, and restore the view.
-  call delete(tmpfile)
-  call winrestview(curw)
-endfunction
-
 function! hcl#align() abort
   let p = '^.*=[^>]*$'
   if exists(':Tabularize') && getline('.') =~# '^.*=' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
